@@ -1,0 +1,261 @@
+//
+//  ViewController.swift
+//  Expandable
+//
+//  Created by Gabriel Theodoropoulos on 28/10/15.
+//  Copyright © 2015 Appcoda. All rights reserved.
+//
+
+import UIKit
+
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    
+    // MARK: IBOutlet Properties
+    var cellDescriptors = [Cell]()
+    var visibleRowsPerSection = [[Int]]()
+    
+    @IBOutlet weak var tblExpandable: UITableView!
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view, typically from a nib.
+        
+        cellDescriptors = []
+        visibleRowsPerSection = [[]]
+        
+    }
+    
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        
+        configureTableView()
+        loadCellDescriptors()
+        
+    }
+    
+    // Load cell objects into array
+    
+    func loadCellDescriptors() {
+    
+        
+        let cell = Cell()
+        cell.additionalRows = 2
+        cell.cellIdentifier = "idCellNormal"
+        cell.isExpandable = 1
+        cell.isExpanded = 0
+        cell.isVisible = true
+        cell.primaryTitle = ""
+        cell.secondaryTitle = "VisibleCell"
+        cell.value = ""
+        
+        let cell1 = Cell()
+        cell1.additionalRows = 2
+        cell1.cellIdentifier = "idCellNormal"
+        cell1.isExpandable = 0
+        cell1.isExpanded = 0
+        cell1.isVisible = true
+        cell1.primaryTitle = "InnerCell"
+        cell1.secondaryTitle = ""
+        cell1.value = ""
+        
+        let cell2 = Cell()
+        cell2.additionalRows = 2
+        cell2.cellIdentifier = "idCellNormal"
+        cell2.isExpandable = 0
+        cell2.isExpanded = 0
+        cell2.isVisible = true
+        cell2.primaryTitle = "InnerCell"
+        cell2.secondaryTitle = ""
+        cell2.value = ""
+        
+        
+        cellDescriptors.append(cell)
+        cellDescriptors.append(cell1)
+        cellDescriptors.append(cell2)
+        
+        
+        getIndicesOfVisibleRows()
+        tblExpandable.reloadData()
+        
+    }
+    
+    
+    func getIndicesOfVisibleRows() {
+        
+        visibleRowsPerSection.removeAll()
+        var allDictionaries: [AnyObject] = [] // array
+        
+        // Convert each object into a dictionary
+        for cell in cellDescriptors {
+            let dictionary: [String:Bool] = [
+                "isVisible" : cell.isVisible
+            ]
+            allDictionaries.append(dictionary)
+        }
+        
+
+        
+        
+        
+       
+            // Declare Array
+            var visibleRows = [Int]()
+        
+                    for (index, element) in allDictionaries.enumerate() {
+                        print("Item \(index): \(element)")
+                        
+                            if element["isVisible"] as! Bool == true {
+                                visibleRows.append(index)
+                            } else if element["isVisible"] as! Bool == false {
+                                print("nothing")
+                            }
+                        
+                        
+                        
+                        
+                    }
+        
+            
+        visibleRowsPerSection.append(visibleRows)
+        print(visibleRowsPerSection)
+        
+    
+        
+        
+
+        } // END of func
+    
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    
+    // MARK: Custom Functions
+    func configureTableView() {
+        tblExpandable.delegate = self
+        tblExpandable.dataSource = self
+        tblExpandable.tableFooterView = UIView(frame: CGRectZero)
+        tblExpandable.registerNib(UINib(nibName: "NormalCell", bundle: nil), forCellReuseIdentifier: "idCellNormal")
+    }
+    
+    
+    // MARK: UITableView Delegate and Datasource Functions
+    
+//    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+//        if cellDescriptors.count > 0 {
+//            return cellDescriptors.count
+//        }
+//        else {
+//            return 0
+//        }
+//    }
+    
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return visibleRowsPerSection.count
+    }
+    
+    
+//    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+//        
+//        let currentCellDescriptor = getCellDescriptorForIndexPath(indexPath)
+//        
+//        let cell = tableView.dequeueReusableCellWithIdentifier(currentCellDescriptor.cellIdentifier as String, forIndexPath: indexPath) as! CustomCell
+//        
+//        return cell
+////        let cell = UITableViewCell()
+////        
+////        return cell
+//    }
+    
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let currentCellDescriptor = getCellDescriptorForIndexPath(indexPath)
+        let cell = tableView.dequeueReusableCellWithIdentifier(currentCellDescriptor.cellIdentifier as String, forIndexPath: indexPath) as! CustomCell
+        
+        
+        if currentCellDescriptor.cellIdentifier as String == "idCellNormal" {
+            
+            let test = currentCellDescriptor.primaryTitle
+            let test1 = currentCellDescriptor.secondaryTitle
+            
+            
+            if test == "InnerCell" {
+                cell.textLabel?.text = test as String
+            }
+            
+            if test1 == "VisibleCell" {
+                cell.detailTextLabel?.text = test1 as String
+            }
+        }
+        
+        
+        return cell
+    }
+    
+    
+//    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+//        
+//        print("Hello \(visibleRowsPerSection)")
+//        let currentCellDescriptor = getCellDescriptorForIndexPath(indexPath)
+//        
+//        switch currentCellDescriptor.cellIdentifier {
+//        case "firstCell":
+//            return 60.0
+//            //        case "idCellDatePicker":
+//            //            return 270.0
+//        default:
+//            return 44.0
+//        }
+//    }
+    
+    
+    
+    
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    }
+    
+    
+    
+    
+    
+//    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+//        switch section {
+//        case 0:
+//            return "Personal"
+//            
+//        case 1:
+//            return "Preferences"
+//            
+//        default:
+//            return "Work Experience"
+//        }
+//    }
+    
+    
+    
+    
+    
+    // MARK: Helpers
+    
+    // Get cell descriptor for indexPath
+    // Get the cell object that matches the row
+    func getCellDescriptorForIndexPath(indexPath: NSIndexPath) -> Cell {
+        print(visibleRowsPerSection)
+        print("")
+        
+        let indexOfVisibleRow = visibleRowsPerSection[indexPath.section][indexPath.row]
+        print(indexOfVisibleRow)
+        let cellDescriptor = cellDescriptors[indexOfVisibleRow]
+        print(cellDescriptor)
+        return cellDescriptor
+    }
+    
+    
+}
